@@ -3,7 +3,7 @@ import requests
 import time
 import argparse
 from get_coords import get_coords
-from send_daft_email import sendDaftEmail
+from send_daft_email import send_daft_email
 from os.path import exists
 from initialise_db import initialise_db
 from get_ids_from_db import get_ids_from_db
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     links = scrape_daft(num_beds, max_price)
     print(f'{str(len(links))} Properties found for {max_price} or less with {num_beds} beds.')
     if len(links) > 0:
-        sendDaftEmail(links, to, num_beds)
+        send_daft_email(links, to, num_beds)
         update_db(links, to, num_beds)
 
 

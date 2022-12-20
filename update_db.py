@@ -17,14 +17,20 @@ def update_db(properties, sent_to, num_beds):
     updated_properties_df.to_sql('properties', conn, if_exists = 'replace', index = False)
 
     users_df = pd.read_sql_query("SELECT * FROM users;", conn)
-    max_id = users_df['id'].max()
+    if len(users_df['id']) == 0:
+        max_id = 0
+    else:
+        max_id = users_df['id'].max()
     for email in sent_to:
-        if email in list(users_df['email']) == False:
-            users_df = pd.concat([users_df, pd.DataFrame([max_id+1, email.split('@')[0], email])], ignore_index=False)
+        if len(users_df['id']) == 0:
+            users_df = pd.DataFrame([[max_id+1, email.split('@')[0], email]], columns=['id', 'name', 'email'])
+            max_id += 1
+        elif email in list(users_df['email']) == False:
+            users_df = pd.concat([users_df, pd.DataFrame([max_id+1, email.split('@')[0], email], columns=['id', 'name', 'email'])], ignore_index=True)
             max_id += 1
     users_df.to_sql('users', conn, if_exists='replace', index=False)
 
     conn.close()
 
 if __name__ == "__main__":
-    update_db()
+    update_db([{'id':'test-delete-from-db', 'price':'€2,200 per month', 'latitude':69.42069, 'longitude':-3.25108}], ['test@example.com'], '2')

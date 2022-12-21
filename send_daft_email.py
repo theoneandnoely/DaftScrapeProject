@@ -4,10 +4,24 @@ from email.mime.text import MIMEText
 from os import getenv
 from datetime import datetime
 
-def send_daft_email(properties, to, num_beds):
+def send_daft_email(properties: list, to: list, num_beds: str):
+    '''
+    Sends Email notification for the new properties scraped.
+
+    INPUT:
+    - properties (list): List of dictionaries relating to each property scraped. Each dictionary contains the daft_id, link, address, price, latitude, and longitude for the property.
+    - to (list): list of email addresses of recipients as strings
+    - num_beds (str): number of beds in the properties to be used in Subject line of email
+
+    OUTPUT:
+    None
+    '''
+
+    # Get email address and password from envirnment variables where they are saved as GMAIL_USER and GMAIL_PW respectively
     gmail_user = getenv('GMAIL_USER')
     gmail_pw = getenv('GMAIL_PW')
 
+    # Use MIMEMultipart to construct email with text form and html form
     msg = MIMEMultipart('alternative')
     msg['Subject'] = 'New {} Bedroom Apartments On Daft'.format(num_beds)
     msg['From'] = gmail_user

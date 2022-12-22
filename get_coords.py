@@ -2,7 +2,7 @@ from os import getenv
 import requests
 import json
 
-def get_coords(address: str):
+def get_coords(address: str) -> tuple[float]:
     '''
     Uses positionstack.com API to determine latitude and longitude coordinates based on the address in the daft ad.
 

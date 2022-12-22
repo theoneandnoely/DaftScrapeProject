@@ -12,7 +12,7 @@ import ast
 import datetime
 
 
-def scrape_daft(num_beds: str, max_price: str):
+def scrape_daft(num_beds: str, max_price: str) -> list[dict]:
     '''
     Function to connect to daft.ie, scrape the most recent properties with a specified max price and number of beds, and return the details in a list of dictionaries
 

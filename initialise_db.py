@@ -1,7 +1,7 @@
 import sqlite3
 from os.path import exists
 
-def initialise_db():
+def initialise_db() -> None:
     '''
     Initialises the daft_data.db database with the properties and users tables and correct columns
 
@@ -21,7 +21,7 @@ def initialise_db():
     curs = conn.cursor()
     
     # Create users table with id, name, and email columns
-    curs.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT);")
+    curs.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT, template TEXT);")
 
     # Create properties table with daft_id, sent_to, num_beds, price, latitude, longitude, and applied columns
     curs.execute("CREATE TABLE properties (daft_id TEXT, sent_to TEXT, num_beds INTEGER, price REAL, latitude REAL, longitude REAL, applied INTEGER);")

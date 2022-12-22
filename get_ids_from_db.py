@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 
-def get_ids_from_db():
+def get_ids_from_db() -> list[str]:
     '''
     Returns a list of the daft IDs which have already been scraped.
 

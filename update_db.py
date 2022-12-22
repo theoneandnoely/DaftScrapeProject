@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 
-def update_db(properties: list, sent_to: list, num_beds: str):
+def update_db(properties: list, sent_to: list, num_beds: str) -> None:
     '''
     Connects to the daft_data.db database and udpates the properties and users tables with new data.
 
@@ -53,10 +53,10 @@ def update_db(properties: list, sent_to: list, num_beds: str):
     # Iterate through each email in the sent_to list and append the user if they don't already exist in the table, with the id as the maximum id + 1
     for email in sent_to:
         if len(users_df['id']) == 0:
-            users_df = pd.DataFrame([[max_id+1, email.split('@')[0], email]], columns=['id', 'name', 'email'])
+            users_df = pd.DataFrame([[max_id+1, email.split('@')[0], email, '']], columns=['id', 'name', 'email', 'template'])
             max_id += 1
         elif email in list(users_df['email']) == False:
-            users_df = pd.concat([users_df, pd.DataFrame([max_id+1, email.split('@')[0], email], columns=['id', 'name', 'email'])], ignore_index=True)
+            users_df = pd.concat([users_df, pd.DataFrame([max_id+1, email.split('@')[0], email, ''], columns=['id', 'name', 'email', 'template'])], ignore_index=True)
             max_id += 1
     
     # Replace users table with updated users table

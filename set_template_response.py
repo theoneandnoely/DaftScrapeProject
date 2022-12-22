@@ -3,6 +3,7 @@ import pandas as pd
 from initialise_db import initialise_db
 from os.path import exists
 import argparse
+import urllib.parse
 
 class FileTypeError(Exception):
     pass
@@ -29,6 +30,11 @@ def set_template_response(user: str, filepath: str):
     else:
         with open(filepath, 'r', encoding='utf-8') as f:
             contents = f.read()
+            print(f'File Contents:\n{contents}\n\n')
+    
+    url_encoded_contents = urllib.parse.quote(contents)
+    formatted_contents = url_encoded_contents.replace('%7B', '{').replace('%7D', '}')
+    print(f'Parsed contents:\n{formatted_contents}\n\n')
     
     # Initialise database if this doesn't already exist
     if exists('daft_data.db') == False:
@@ -41,6 +47,7 @@ def set_template_response(user: str, filepath: str):
 
     # Pull data from users table
     users_df = pd.read_sql_query("SELECT * FROM users", conn)
+    print(f'Old users_df:\n{users_df[users_df["email"] == user]["template"][0]}\n\n')
     
     # Check if user exists in users table
     if user in users_df['id'] == False and user in users_df['name'] == False and user in users_df['email'] == False:
@@ -49,19 +56,21 @@ def set_template_response(user: str, filepath: str):
     # Check if template column exists in users table, add it to DataFram if not, and update the template value for the relevant user with the contents of filepath
     if 'template' in users_df.columns:
         if '@' in user:
-            users_df[users_df['email'] == user]['template'] = contents
+            users_df.loc[users_df['email'] == user, 'template'] = formatted_contents
         elif user.isdigit():
-            users_df[users_df['id'] == user]['template'] = contents
+            users_df.loc[users_df['id'] == user, 'template'] = formatted_contents
         else:
-            users_df[users_df['name'] == user]['template'] = contents
+            users_df.loc[users_df['name'] == user, 'template'] = formatted_contents
     else:
         users_df = users_df.assign({'template':''})
         if '@' in user:
-            users_df[users_df['email'] == user]['template'] = contents
+            users_df.loc[users_df['email'] == user, 'template'] = formatted_contents
         elif user.isdigit():
-            users_df[users_df['id'] == user]['template'] = contents
+            users_df.loc[users_df['id'] == user, 'template'] = formatted_contents
         else:
-            users_df[users_df['name'] == user]['template'] = contents
+            users_df.loc[users_df['name'] == user, 'template'] = formatted_contents
+
+    print(f'Updated users_df:\n{users_df[users_df["email"] == user]["template"][0]}\n\n')
 
     # Replace the users table with the data in users_df
     users_df.to_sql('users', conn, if_exists='replace', index=False)

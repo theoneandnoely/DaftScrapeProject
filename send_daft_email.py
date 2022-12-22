@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from os import getenv
 from datetime import datetime
 from get_template_response import get_template_response
+import urllib.parse
 
 def send_daft_email(properties: list, to: list, num_beds: str):
     '''
@@ -37,13 +38,13 @@ def send_daft_email(properties: list, to: list, num_beds: str):
         template = ""
         for user in to:
             db_temp = get_template_response(user)
-            db_temp = db_temp.format(num_beds = num_beds, neighbourhood = property['address'].split(', ')[1])
+            db_temp = db_temp.format(num_beds = urllib.parse.quote(num_beds), neighbourhood = urllib.parse.quote(property['address'].split(', ')[1]))
             db_temp = db_temp.replace('\n', '%0A')
             db_temp = db_temp.replace(' ', '%20')
-            template = template + f'{user}:%20%20{db_temp}%20%20%20'
+            template = template + f'{user}:%0A%0A{db_temp}%0A%0A%0A'
 
         text += f"Address: {property['address']} ({property['latitude']}N, {property['longitude']}E)\nPrice: {property['price']}\n{property['link']}\n\n"
-        html_links += f'<li><a href="{property["link"]}">{property["address"]} ({property["latitude"]}N, {property["longitude"]}E) - {property["price"]}</a> | <a href="mailto:{gmail_user}?subject=Interested%20In%20Property%20{property["id"]}&body={property["address"]}%0A%0A{template}">Interested?</a></li>'
+        html_links += f'<li><a href="{property["link"]}">{property["address"]} ({property["latitude"]}N, {property["longitude"]}E) - {property["price"]}</a> | <a href="mailto:{gmail_user}?subject=Interested%20In%20Property%20{property["id"]}&body={urllib.parse.quote(property["address"])}%0A%0A{template}">Interested?</a></li>'
     html = f"""\
     <html>
         <head></head>
